@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# Installs Python 2.7.9 on Ubuntu 14.04 to include security updates
+# Run this script with superuser privileges.
+#
+
+BASEDEPS="build-essential python-pip"
+BUILDDEPS="libbz2-dev \
+libc6-dev \
+libgdbm-dev \
+libncursesw5-dev \
+libreadline-gplv2-dev \
+libsqlite3-dev \
+libssl-dev \
+tk-dev"
+
+TARFILE="Python-2.7.9.tgz"
+TARHOST="https://www.python.org/ftp/python/2.7.9"
+SRCDIR="Python-2.7.9"
+
+apt-get update
+apt-get install -y $BASEDEPS $BUILDDEPS
+
+if [ ! -e $SRCDIR ]; then
+	wget "$TARHOST/$TARFILE"
+	tar xvf $TARFILE
+fi
+
+cd $SRCDIR
+./configure
+make
+make install
+
+cd ..
+python -m ensurepip --upgrade
+
+echo "removing source files"
+rm $TARFILE
+rm -r $SRCDIR
